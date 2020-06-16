@@ -191,8 +191,8 @@ function cb() {
 
 }
 
-gulp.task('sort_css', function () {
-    return gulp.src('./src/**/*.css', {
+function sort_css() {
+    return gulp.src('./src/**/*.*css', {
         base: './'
     }).pipe(
         postcss([css_declaration_sorter({
@@ -201,14 +201,14 @@ gulp.task('sort_css', function () {
     ).pipe(
         gulp.dest('./')
     );
-});
-
+};
 
 function watchFiles(params) {
     gulp.watch([path.watch.html], html);
     gulp.watch([path.watch.css], css);
     gulp.watch([path.watch.js], js);
     gulp.watch([path.watch.img], images);
+    gulp.watch(['./src/**/*.*css'], sort_css)
 }
 
 function clean(params) {
