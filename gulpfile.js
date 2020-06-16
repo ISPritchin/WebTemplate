@@ -1,4 +1,3 @@
-
 let project_folder = require("path").basename(__dirname);
 let source_folder = "src";
 
@@ -28,7 +27,10 @@ let path = {
     clean: "./" + project_folder + "/"
 }
 
-let { src, dest } = require('gulp'),
+let {
+    src,
+    dest
+} = require('gulp'),
     gulp = require('gulp'),
     browsersync = require("browser-sync").create(),
     fileinclude = require("gulp-file-include"),
@@ -46,7 +48,9 @@ let { src, dest } = require('gulp'),
     svgSprite = require('gulp-svg-sprite'),
     ttf2woff = require('gulp-ttf2woff'),
     ttf2woff2 = require('gulp-ttf2woff2'),
-    fonter = require('gulp-fonter');
+    fonter = require('gulp-fonter'),
+    css_declaration_sorter = require('css-declaration-sorter'),
+    postcss = require('gulp-postcss');
 
 function browserSync(params) {
     browsersync.init({
@@ -122,7 +126,9 @@ function images() {
         .pipe(
             imagemin({
                 progressive: true,
-                svgoPlugins: [{ removeViewBox: false }],
+                svgoPlugins: [{
+                    removeViewBox: false
+                }],
                 interlaced: true,
                 optimizationLevel: 3 // 0 to 7
             })
@@ -151,14 +157,13 @@ gulp.task('otf2ttf', function () {
 gulp.task('svgSprite', function () {
     return gulp.src([source_folder + '/iconsprite/*.svg'])
         .pipe(svgSprite({
-                mode: {
-                    stack: {
-                        sprite: "../icons/icons.svg",  //sprite file name
-                        example: true
-                    }
-                },
-            }
-        ))
+            mode: {
+                stack: {
+                    sprite: "../icons/icons.svg", //sprite file name
+                    example: true
+                }
+            },
+        }))
         .pipe(dest(path.build.img))
 })
 
@@ -185,6 +190,19 @@ function fontsStyle(params) {
 function cb() {
 
 }
+
+gulp.task('sort_css', function () {
+    return gulp.src('./src/**/*.css', {
+        base: './'
+    }).pipe(
+        postcss([css_declaration_sorter({
+            order: 'smacss'
+        })])
+    ).pipe(
+        gulp.dest('./')
+    );
+});
+
 
 function watchFiles(params) {
     gulp.watch([path.watch.html], html);
