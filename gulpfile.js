@@ -215,8 +215,8 @@ function cb() {
 
 }
 
-function sort_css() {
-    return gulp.src("/**/*.*css", {
+gulp.task('sort_css', function () {
+    return gulp.src(source_folder + "/**/*.*css", {
         base: './'
     }).pipe(
         postcss([css_declaration_sorter({
@@ -225,7 +225,7 @@ function sort_css() {
     ).pipe(
         gulp.dest('./')
     );
-};
+})
 
 function watchFiles(params) {
     gulp.watch([path.watch.html], html);
