@@ -17,12 +17,14 @@ let path = {
         js: source_folder + "/js/script.js",
         img: source_folder + "/img/**/*.{jpg,png,svg,gif,ico,webp}",
         fonts: source_folder + "/fonts/*.ttf",
+        scss: source_folder + "/components/**/*.scss",
     },
     watch: {
         html: source_folder + "/**/*.html",
         css: source_folder + "/scss/**/*.scss",
         js: source_folder + "/js/**/*.js",
-        img: source_folder + "/img/**/*.{jpg,png,svg,gif,ico,webp}"
+        img: source_folder + "/img/**/*.{jpg,png,svg,gif,ico,webp}",
+        scss: source_folder + "/components/**/*.scss",
     },
     clean: "./" + project_folder + "/"
 }
@@ -96,6 +98,28 @@ function css() {
         )
         .pipe(dest(path.build.css))
         .pipe(browsersync.stream())
+}
+
+function _scss() {
+    return src(path.src.scss, {
+            base: './'
+        })
+        .pipe(
+            scss({
+                outputStyle: "expanded"
+            })
+        )
+        .pipe(
+            group_media()
+        )
+        .pipe(
+            autoprefixer({
+                overrideBrowserslist: ["last 5 versions"],
+                cascade: true
+            })
+        )
+        .pipe(webpcss())
+        .pipe(dest("./"))
 }
 
 function js() {
@@ -192,7 +216,7 @@ function cb() {
 }
 
 function sort_css() {
-    return gulp.src('./src/**/*.*css', {
+    return gulp.src("/**/*.*css", {
         base: './'
     }).pipe(
         postcss([css_declaration_sorter({
@@ -208,7 +232,7 @@ function watchFiles(params) {
     gulp.watch([path.watch.css], css);
     gulp.watch([path.watch.js], js);
     gulp.watch([path.watch.img], images);
-    gulp.watch(['./src/**/*.*css'], sort_css)
+    gulp.watch([path.watch.scss], _scss);
 }
 
 function clean(params) {
